@@ -1,0 +1,193 @@
+# Online E-Book Management System Documentation
+
+## 1. Project Overview
+
+### Project Name
+Online E-Book Management System
+
+### Project Type
+Full-stack web application with separate frontend and backend.
+
+### Primary Purpose
+A digital library platform enabling users to browse, subscribe to, and upload e-books, with administrative controls for content moderation and system management.
+
+## 2. Technology Stack
+
+### Frontend Technologies
+- **Framework**: Next.js (Latest) - React-based framework with SSR/SSG
+- **Styling**: TailwindCSS (Latest) - Utility-first CSS framework
+- **Language**: TypeScript (Latest) - Type-safe JavaScript
+- **Package Manager**: npm
+- **Node Version Required**: v18+
+
+### Backend Technologies
+- **Runtime**: Node.js (v18+)
+- **Framework**: Express.js (^5.1.0)
+- **ORM**: Prisma (^7.0.0)
+- **Database**: SQLite (bundled with Prisma)
+- **Authentication**: JWT (jsonwebtoken ^9.0.2)
+- **Password Security**: bcryptjs (^3.0.3)
+- **File Upload**: Multer (^2.0.2)
+- **CORS**: cors (^2.8.5)
+- **Environment**: dotenv (^17.2.3)
+
+### Additional Tools
+- **Git**: For version control
+- **Prisma Studio**: For database management
+- **npm**: For dependency management
+
+## 3. Project Directory Structure
+
+```text
+/
+├── client/
+│   ├── app/
+│   │   ├── admin/
+│   │   ├── books/
+│   │   ├── dashboard/
+│   │   ├── login/
+│   │   ├── signup/
+│   │   ├── subscribe/
+│   │   ├── upload/
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── components/
+│   │   ├── Footer.tsx
+│   │   └── Navbar.tsx
+│   ├── lib/
+│   ├── public/
+│   ├── next.config.ts
+│   ├── package.json
+│   └── tsconfig.json
+├── server/
+│   ├── prisma/
+│   │   ├── schema.prisma
+│   │   └── dev.db
+│   ├── src/
+│   │   ├── controllers/
+│   │   │   ├── admin.controller.js
+│   │   │   ├── auth.controller.js
+│   │   │   ├── books.controller.js
+│   │   │   └── users.controller.js
+│   │   ├── middleware/
+│   │   │   ├── auth.middleware.js
+│   │   │   └── upload.middleware.js
+│   │   ├── routes/
+│   │   │   ├── admin.routes.js
+│   │   │   ├── auth.routes.js
+│   │   │   ├── books.routes.js
+│   │   │   └── users.routes.js
+│   │   └── index.js
+│   ├── uploads/
+│   ├── check_users.js
+│   ├── delete-book.js
+│   ├── package.json
+│   └── promote_admin.js
+└── README.md
+```
+
+## 4. Database Schema
+
+The application uses a relational database managed by Prisma.
+
+### User
+- **id**: String (UUID) - Unique identifier
+- **email**: String (Unique) - User's email address
+- **password**: String - Hashed password
+- **name**: String (Optional) - User's full name
+- **role**: String - 'USER' or 'ADMIN' (Default: 'USER')
+- **createdAt**: DateTime - Account creation timestamp
+- **updatedAt**: DateTime - Last update timestamp
+- **subscription**: Relation to Subscription
+- **uploads**: Relation to Uploads
+- **bookmarks**: Relation to Bookmarks
+
+### Book
+- **id**: String (UUID) - Unique identifier
+- **title**: String - Book title
+- **author**: String - Author's name
+- **description**: String - Book summary
+- **coverImage**: String - URL to cover image
+- **fileUrl**: String - URL to book file
+- **category**: String - Genre/Category
+- **createdAt**: DateTime - Creation timestamp
+- **updatedAt**: DateTime - Last update timestamp
+- **bookmarks**: Relation to Bookmarks
+
+### Subscription
+- **id**: String (UUID) - Unique identifier
+- **userId**: String - Foreign key to User
+- **startDate**: DateTime - Subscription start date
+- **endDate**: DateTime - Subscription expiry date
+- **isActive**: Boolean - Subscription status (Default: true)
+
+### Upload (User Contributions)
+- **id**: String (UUID) - Unique identifier
+- **userId**: String - Foreign key to User
+- **title**: String - Book title
+- **author**: String - Author's name
+- **description**: String - Book summary
+- **coverImage**: String - URL to cover image
+- **fileUrl**: String - URL to uploaded file
+- **status**: String - 'PENDING', 'APPROVED', 'REJECTED' (Default: 'PENDING')
+- **createdAt**: DateTime - Upload timestamp
+
+### Bookmark
+- **id**: String (UUID) - Unique identifier
+- **userId**: String - Foreign key to User
+- **bookId**: String - Foreign key to Book
+- **createdAt**: DateTime - Bookmark timestamp
+
+## 5. API Endpoints
+
+### Authentication
+- `POST /api/auth/register`: Register a new user.
+- `POST /api/auth/login`: Login and receive a JWT.
+- `GET /api/auth/me`: Get current authenticated user details.
+
+### Books
+- `GET /api/books`: Retrieve all books.
+- `GET /api/books/:id`: Retrieve details of a specific book.
+- `POST /api/books`: Create a new book (Admin only).
+
+### Admin
+- `GET /api/admin/stats`: Get system statistics (users, books, etc.).
+- `GET /api/admin/users`: List all registered users.
+- `PUT /api/admin/uploads/:id/approve`: Approve a user-uploaded book.
+- `PUT /api/admin/uploads/:id/reject`: Reject a user-uploaded book.
+
+### User Actions
+- `GET /api/users/dashboard`: Get user-specific dashboard data.
+- `POST /api/users/subscribe`: Activate a subscription.
+- `POST /api/users/upload`: Upload a book for admin review.
+- `POST /api/users/bookmarks`: Toggle bookmark for a book.
+- `GET /api/users/bookmarks`: Retrieve user's bookmarked books.
+
+## 6. Installation & Setup
+
+1.  **Clone the Repository**:
+    ```bash
+    git clone <repository-url>
+    cd E_Book_Management
+    ```
+
+2.  **Backend Setup**:
+    ```bash
+    cd server
+    npm install
+    # Create .env file with DATABASE_URL, JWT_SECRET, etc.
+    npx prisma migrate dev
+    npm run dev
+    ```
+
+3.  **Frontend Setup**:
+    ```bash
+    cd client
+    npm install
+    npm run dev
+    ```
+
+4.  **Access the Application**:
+    - Frontend: `http://localhost:3000`
+    - Backend: `http://localhost:5000`
